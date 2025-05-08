@@ -4,12 +4,13 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
-  ModalFooter,
   Button,
+  addToast,
+  Switch,
 } from '@heroui/react';
-import Device, { DeviceType } from '@/types/device';
-import { DeviceControlLight } from '../device-control/light';
-import { Icons } from '../icons';
+import Device from '@/types/device';
+import Icons from '../icons';
+import DeviceAPI from '@/api/device';
 
 export const DeviceEditor = ({
   isOpen,
@@ -17,91 +18,69 @@ export const DeviceEditor = ({
   onClose,
 }: {
   isOpen: boolean;
-  device?: Device;
+  device: Device;
   onClose?: () => void;
 }) => {
 
-  const [updatedDevice, setUpdatedDevice] = useState<Device | undefined>(device);
-  // const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  const [updatedDevice, setUpdatedDevice] = useState<Device>(device);
+
+  const [updatedDeviceStatus, setUpdatedDeviceStatus] = useState<object>({});
+
+  // string formatter "is_on" to "Is On"
+  const formatReadableKey = (str: string) => {
+    return str
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  };
+
   useEffect(() => {
     setUpdatedDevice(device);
+    try {
+      console.log('Device currentStatus', typeof device.currentStatus);
+      if (typeof device.currentStatus === 'string') {
+        const parsedStatus = JSON.parse(device.currentStatus);
+        setUpdatedDeviceStatus(parsedStatus);
+      } else if (typeof device.currentStatus === 'object') {
+        setUpdatedDeviceStatus(device.currentStatus);
+      }
+    } catch (error) {
+      console.warn('Error parsing device status', error);
+      setUpdatedDeviceStatus({});
+    }
   }, [device]);
 
-  // const handleChange = (
-  //   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  // ) => {
-  //   const { name, value, type } = e.target;
-  //   const keys = name.split('.').map(k => (isNaN(Number(k)) ? k : Number(k)));
-  
-  //   setUpdatedDevice(prev => {
-  //     const updated = { ...prev };
-  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //     let current: any = updated;
-  
-  //     for (let i = 0; i < keys.length - 1; i++) {
-  //       const key = keys[i];
-  //       const nextKey = keys[i + 1];
-  
-  //       if (typeof nextKey === 'number') {
-  //         current[key] = Array.isArray(current[key]) ? [...current[key]] : [];
-  //       } else {
-  //         current[key] = typeof current[key] === 'object' && current[key] !== null
-  //           ? { ...current[key] }
-  //           : {};
-  //       }
-  //       current = current[key];
-  //     }
-  
-  //     const lastKey = keys[keys.length - 1];
+  const removeDevice = async () => {
+    if (!updatedDevice) return;
+    const response = await DeviceAPI.deleteDevice(device.id);
+    if (response) {
+      addToast({
+        title: 'Success',
+        description: 'Device removed successfully',
+        color: 'success',
+      });
+      if (onClose) {
+        onClose();
+      }
+    }
+  };
 
-  //     if (type === 'number') {
-  //       current[lastKey] = Number(value);
-  //     } else {
-  //       current[lastKey] = value;
-  //     }
-  
-  //     return updated;
-  //   });
-  // };
-
-  // const handleSave = async () => {
-  //   setIsSubmitting(true);
-  //   if (updatedDevice) {
-  //     const order = await OrderAPI.updateOrder(updatedDevice);
-  //     if (order) {
-  //       if (onClose) onClose();
-  //     }
-  //     setIsSubmitting(false);
-  //   }
-  // };
-
-  // const handleCreate = async () => {
-  //   setIsSubmitting(true);
-  //   if (updatedDevice) {
-  //     const order = await OrderAPI.createOrder(updatedDevice);
-  //     if (order) {
-  //       if (onClose) onClose();
-  //     }
-  //     setIsSubmitting(false);
-  //   }
-  // };
-
-  // const handleDelete = async () => {
-  //   setIsSubmitting(true);
-  //   if (updatedDevice) {
-  //     const order = await OrderAPI.deleteOrder(updatedDevice);
-  //     if (order) {
-  //       if (onClose) onClose();
-  //     }
-  //     setIsSubmitting(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   validateForm();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [tabKey, updatedDevice]);
+  const updateDeviceStatus = async (status:object) => {
+    if (!updatedDevice) return;
+    if (!status) return;
+    setUpdatedDeviceStatus(status);
+    const response = await DeviceAPI.updateDeviceStatus(
+      updatedDevice.id,
+      status
+    );
+    if (response) {
+      addToast({
+        title: 'Success',
+        description: 'Device status updated successfully',
+        color: 'success',
+        timeout: 1000,
+      });
+    }
+  }
 
   return (
     <Modal
@@ -153,10 +132,81 @@ export const DeviceEditor = ({
               </div>
             </ModalHeader>
             <ModalBody>
-              {updatedDevice?.deviceType === DeviceType.LIGHT && (<DeviceControlLight device={updatedDevice} />)}
+              <div className='flex flex-col gap-4'>
+                <div className='flex flex-row gap-2 items-center'>
+                  <table className='w-full'>
+                    <thead>
+                      <tr>
+                        <th className='w-32'></th>
+                        <th className=''></th>
+                        <th className=''></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className='text-sm text-default-400'>Device ID</td>
+                        <td className='text-sm text-default-500'>{updatedDevice.id.slice(0, 8)}...</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td className='text-sm text-default-400'>Device Type</td>
+                        <td className='text-sm text-default-500'>{updatedDevice.deviceType}</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td className='text-sm text-default-400'>Device Name</td>
+                        <td className='text-sm text-default-500'>{updatedDevice.name}</td>
+                        <td></td>
+                      </tr>
+
+                      <tr><td colSpan={3} className='h-3' /></tr>
+
+                      {Object.entries(updatedDeviceStatus).map(([key, value]) => (
+                        <tr key={key}>
+                          <td className='text-sm text-default-400'>{formatReadableKey(key)}</td>
+                          <td className='text-sm text-default-500'>
+                            {typeof value === 'string' ? value : JSON.stringify(value)}
+                          </td>
+                          <td>
+                            {typeof value === 'boolean' && (
+                              <Switch
+                                isSelected={value}
+                                onChange={() => {
+                                  updateDeviceStatus({
+                                    ...updatedDeviceStatus,
+                                    [key]: !value,
+                                  });
+                                }}
+                                size='sm'
+                                color='primary'
+                              />
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+
+                      <tr>
+                        <td colSpan={3} className='h-3'>
+                          <div className='flex justify-center items-center mt-12'>
+                            <Button
+                              variant="light"
+                              color='danger'
+                              onPress={removeDevice}
+                            >
+                              <Icons.TrashIcon className='mr-2' size={16} color='hsl(var(--heroui-danger-500))' strokeWidth={2.5} />
+                              Remove Device
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr><td colSpan={3} className='h-3' /></tr>
+
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </ModalBody>
-            <ModalFooter>
-            </ModalFooter>
           </>
         )}
       </ModalContent>

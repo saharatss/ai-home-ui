@@ -4,7 +4,7 @@ import { useUser } from "@/context/user";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 
-const SidebarDivider = () => {
+export const SidebarDivider = () => {
   return (
     <div className="flex flex-col w-full px-3 py-2">
       <div className="w-full h-[1px] bg-default-200" />
@@ -12,7 +12,7 @@ const SidebarDivider = () => {
   );
 }
 
-const SidebarMenuItem = ({
+export const SidebarMenuItem = ({
   isSelected = false,
   children,
   onPress,
@@ -23,10 +23,15 @@ const SidebarMenuItem = ({
 }) => {
   return (
     <div
-      className={`w-full flex items-center gap-2 hover:bg-default-200 rounded-lg p-2 px-3 cursor-pointer transition-colors duration-100 ${isSelected ? 'bg-black text-white hover:bg-default-800' : ''}`}
+      className={`
+        w-full flex items-center gap-2
+        p-2 px-3 cursor-pointer rounded-lg
+        hover:bg-default-200 
+        transition-colors duration-100
+        ${isSelected ? 'bg-black text-white hover:bg-default-800' : ''}`}
       onClick={onPress}
     >
-      {children}
+      <span className="truncate w-full">{children}</span>
     </div>
   );
 }

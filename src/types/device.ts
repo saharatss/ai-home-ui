@@ -3,30 +3,32 @@ export enum DeviceType {
 	SWITCH            = "SWITCH",
 	OUTLET            = "OUTLET",
 	LIGHT             = "LIGHT",
-	THERMOSTAT        = "THERMOSTAT",
+	FAN               = "FAN",
 	DOORBELL          = "DOORBELL",
-	LOCK              = "LOCK",
+	THERMOSTAT        = "THERMOSTAT",
 	THERMOSTAT_SENSOR = "THERMOSTAT_SENSOR",
-	DOOR_SENSOR       = "DOOR_SENSOR",
 	MOTION_SENSOR     = "MOTION_SENSOR",
-	SMOKE_SENSOR      = "SMOKE_SENSOR",
-	CO_SENSOR         = "CO_SENSOR",
-	LEAK_SENSOR       = "LEAK_SENSOR",
-	BLINDS            = "BLINDS",
+	LIGHT_SENSOR      = "LIGHT_SENSOR",
 }
 
 export default interface Device {
 	id: string;
 	name: string;
-	deviceType: DeviceType;
 	ownerId: string;
-	createdDate: string;
-	updatedDate: string;
-	currentStatus: string; // JSON string
-	config: string; // JSON string
+	deviceType: DeviceType;
+	createdDate?: string;
+	updatedDate?: string;
+	currentStatus?: {
+		power?: boolean;
+		motion?: boolean;
+		brightness?: number;
+		temperature?: number;
+		humidity?: number;
+	};
+	config?: object;
 }
 
-export interface DeviceStatus {
+export interface DeviceStatusRecord {
 	id: string;
 	device_id: string;
 	status: string;

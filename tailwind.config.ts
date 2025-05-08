@@ -28,13 +28,13 @@ export default {
             DEFAULT: "#FFFFFF",
           },
           foreground:{
-            DEFAULT: "#262626",
+            DEFAULT: "#000000",
           },
           primary: {
             foreground: "#FFFFFF",
-            DEFAULT: "#262626",
+            DEFAULT: "#000000",
           },
-          focus: "#262626",
+          focus: "#000000",
           
         },
       },

@@ -5,14 +5,14 @@ import { PageMetadata } from "@/context/page-metadata";
 import Device from "@/types/device";
 import { DeviceEditor } from "@/components/editors/device-editor";
 import { Button } from "@heroui/react";
-import { Icons } from "@/components/icons";
+import Icons from "@/components/icons";
 
 const Page = () => {
 
   const [selectedDevice, setSelectedDevice] = React.useState<Device | null>(null);
 
   return (<>
-    <div className="flex gap-8 flex-col min-h-svh pt-10 px-4">
+    <div className="flex gap-8 flex-col min-h-svh pt-10">
 
       <div className="flex flex-row justify-between items-center gap-3">
         <div className="text-3xl font-normal tracking-wide">Energy Usage</div>
