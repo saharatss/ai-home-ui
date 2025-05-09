@@ -474,7 +474,7 @@ export const PlugIcon3 = (props: IconSvgProps) => {
 export const BoltIcon = (props: IconSvgProps) => {
   return (
     <svg width={props.size || 24} height={props.size || 24} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path fill={props.color || "black"} fillRule="evenodd" clipRule='rounded' d="M6.5 12.671L11.5276 4H13V10H17.5V11.3308L12.516 20H11V14H6.5V12.671ZM8.30578 12.5H12.5V17.0319L15.6998 11.5H11.5V7.0242L8.30578 12.5Z" />
+      <path fill={props.color || "black"} fillRule="evenodd" clipRule='evenodd' d="M6.5 12.671L11.5276 4H13V10H17.5V11.3308L12.516 20H11V14H6.5V12.671ZM8.30578 12.5H12.5V17.0319L15.6998 11.5H11.5V7.0242L8.30578 12.5Z" />
     </svg>
   )
 }

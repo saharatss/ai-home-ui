@@ -7,6 +7,7 @@ import { Button  } from '@heroui/react';
 import { motion } from 'framer-motion';
 import { useDevices } from '@/context/device';
 import Icons from '../icons';
+import { formatDeviceStatusKey, formatDeviceStatusValue } from '@/types/device';
 
 const fadeSlideUp = {
   hidden: { opacity: 0, y: 10 },
@@ -132,10 +133,10 @@ export default function AgentChatEntry({
 										<span className='text-lg' style={{color: 'orange'}}>Device Updated</span>
 									</div>
 									<div className='pl-8 flex flex-row gap-2 items-center text-sm text-default-400'>
-										<span>{getDeviceById(action.id)?.name}</span>
+										<span>{getDeviceById(action.id)?.name ?? "Device Not Found"}</span>
 										<span>―</span>
 										<span>{Object.entries(action.status ?? {}).map(([key, value], index) => (
-											<span key={key}>{`${key} ${value}`}{index < Object.entries(action.status ?? {}).length - 1 ? ', ' : ''} </span>
+											<span key={key}>{`${formatDeviceStatusKey(key)} ${formatDeviceStatusValue(key, value)}`}{index < Object.entries(action.status ?? {}).length - 1 ? ', ' : ''} </span>
 										))}</span>
 									</div>
 								</div>

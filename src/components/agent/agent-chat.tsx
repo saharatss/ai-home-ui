@@ -17,6 +17,9 @@ export const AgentChat = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [isThinking, setIsThinking] = useState<boolean>(false);
 
+	const [isHidable, setIsHidable] = useState<boolean>(true);
+	const [isHidden, setIsHidden] = useState<boolean>(false);
+
 	const [agentSessions, setAgentSessions] = useState<AgentSession[]>([]);
 	const [activeSession, setActiveSession] = useState<AgentSession | null>(null);
 	const [activeSessionName, setActiveSessionName] = useState<string>("");
@@ -32,7 +35,24 @@ export const AgentChat = () => {
 			setIsLoading(false);
 		};
 		fetchAgentSessions();
+		window.addEventListener("resize", handleResize, false);
+		// eslint-disable-next-line
 	}, []);
+
+	useEffect(() => {
+		setIsHidable(router.pathname !== '/');
+		if (router.pathname === '/') {
+			setIsHidden(false);
+		}
+		handleResize();
+		// eslint-disable-next-line
+	}, [router.pathname]);
+
+	const handleResize = () => {
+		if (router.pathname !== '/' && window.innerWidth < 800) {
+			setIsHidden(true);
+		}
+	}
 
 	const createSession = async () => {
 		setIsLoading(true);
@@ -63,6 +83,7 @@ export const AgentChat = () => {
 	};
 
 	const invokeAgent = async (sessionId: string, message: string) => {
+		scrollToBottom();
 		setIsThinking(true);
 		setAgentMessages(prevMessages => [
 			...prevMessages,
@@ -192,18 +213,45 @@ export const AgentChat = () => {
 	}
 
 	return (
-		<div className="w-full h-full flex flex-row gap-0 items-center justify-center">
+		<div className={`
+			${!isHidden ? 'w-full' : 'w-20'}
+			h-full flex flex-row gap-0 items-center justify-start overflow-hidden
+			transition-all duration-300 ease-in-out
+			`}
+		>
+
+			{/* Hidden toggle button */}
+			{isHidden && (
+				<Button
+					isIconOnly
+					variant="flat"
+					className="flex items-center justify-center rounded-full bg-black hover:bg-blue-600 transition duration-200"
+					onPress={() => {
+						setIsHidden(prev => !prev);
+					}}
+				>
+					<Icons.ArrowLeftIcon color="white" strokeWidth={3} />
+				</Button>
+			)}
+
+			{/* Main panel */}
 			<div
 				ref={mainContainer}
-				className="w-full mx-auto h-full overflow-auto relative"
+				className={`
+					${!isHidden ? 'w-full' : 'w-0'}
+					mx-auto h-full overflow-auto relative
+					transition-all duration-300 ease-in-out
+				`}
 				style={{
 					scrollBehavior: 'smooth'
 				}}
 			>
 
 				{/* Main chat area */}
-				<div className="flex max-w-lg mx-auto min-h-[calc(100svh-12em-0.5em)] flex-col gap-0 px-4 pt-10 items-center justify-center">
-
+				<div className={`
+					flex mx-auto min-h-[calc(100svh-12em-0.5em)] max-w-lg
+					flex-col gap-0 px-4 pt-10 items-center justify-center
+				`}>
 					{isLoading ? (
 						<Spinner size="lg" variant='wave' />
 					) : (
@@ -275,7 +323,7 @@ export const AgentChat = () => {
 								base: "!opacity-100",
 								mainWrapper: "w-full bg-white rounded-full shadow-[0px_2px_20px_rgba(0,0,0,0.1)]",
 								inputWrapper: "bg-white rounded-full shadow-none pl-6 pr-3 my-2 data-[hover=true]:bg-unset group-data-[focus=true]:bg-unset",
-								input: "font-light placeholder:text-default-400",
+								input: `font-light placeholder:text-default-400 ${isLoading || isThinking ? "opacity-20" : ""}`,
 							}}
 							size="lg"
 							placeholder="Chat with your house..."
@@ -302,7 +350,20 @@ export const AgentChat = () => {
 								</Button>
 							}
 						/>
-						<div className="text-xs text-default-400 text-center">Our agents can make mistakes. Check important info. Now using : {activeSession?.name ?? "Unknown"}.</div>
+						<div className="text-xs text-default-400 text-center flex items-center gap-2">
+							<div>Our agents can make mistakes. Check important info. Now using : {activeSession?.name ?? "Unknown"}.</div>
+							{isHidable && (
+								<Button
+									variant="flat"
+									className="flex items-center justify-center rounded-full bg-default-200 hover:bg-red-500 hover:text-white transition duration-200 text-xs h-5 px-3 min-w-0"
+									onPress={() => {
+										setIsHidden(prev => !prev);
+									}}
+								>
+									Hide
+								</Button>
+							)}
+						</div>
 					</div>
 				</div>
 
@@ -311,9 +372,9 @@ export const AgentChat = () => {
 			{/* Sidebar */}
 			<div className={`
 				overflow-hidden
-				${isSidebarOpen ? 'min-w-48 max-w-48' : 'min-w-0 max-w-0 w-0 opacity-0'}
+				${isSidebarOpen && !isHidden ? 'min-w-48 max-w-48 px-6' : 'min-w-0 max-w-0 w-0 opacity-0'}
 				transition-all duration-300 ease-in-out
-				flex flex-col px-6 gap-3`}>
+				flex flex-col gap-3`}>
 
 				<Button
 					variant="light"
@@ -368,7 +429,7 @@ export const AgentChat = () => {
 				{activeSession != null ? (<>
 					<div className="w-full flex flex-col gap-0 px-4">
 
-						<div className="text-xs text-default-400 text-nowrap mt-2">Name</div>
+						<div className="text-xs text-default-400 text-nowrap">Name</div>
 						<div className="text-sm text-default-400 text-nowrap">
 							<input
 								type="text"
@@ -392,10 +453,10 @@ export const AgentChat = () => {
 							/>
 						</div>
 						
-						<div className="text-xs text-default-400 text-nowrap mt-2">ID</div>
+						<div className="text-xs text-default-400 text-nowrap mt-3">ID</div>
 						<div className="text-sm text-default-400 text-nowrap">{activeSession.id.substring(0, 8).toLocaleUpperCase()}...</div>
 
-						<div className="text-xs text-default-400 text-nowrap mt-2">Created</div>
+						<div className="text-xs text-default-400 text-nowrap mt-3">Created</div>
 						<div className="text-sm text-default-400 text-nowrap">{new Date(activeSession.createdDate).toLocaleString("en-US", {
 							month: 'short',
 							day: 'numeric',
@@ -404,7 +465,7 @@ export const AgentChat = () => {
 							minute: "2-digit",
 						})}</div>
 
-						<div className="text-xs text-default-400 text-nowrap mt-2">Updated</div>
+						<div className="text-xs text-default-400 text-nowrap mt-3">Updated</div>
 						<div className="text-sm text-default-400 text-nowrap">{new Date(activeSession.updatedDate).toLocaleString("en-US", {
 							month: 'short',
 							day: 'numeric',

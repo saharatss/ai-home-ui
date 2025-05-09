@@ -33,8 +33,8 @@ const Page = () => {
         {devices.length === 0 && (
           <div className="flex flex-col items-center justify-center gap-0 p-4 py-10 rounded-xl bg-white">
             <Icons.EmptyBoxIcon size={64} />
-            <div className="text-lg font-normal tracking-wide mt-3">No devices found</div>
-            <div className="text-sm text-default-400">Add a new device to get started</div>
+            <div className="text-center text-lg font-normal tracking-wide mt-3">No devices found</div>
+            <div className="text-center text-sm text-default-400">Add a new device to get started</div>
           </div>
         )}
         {devices.map((device) => (

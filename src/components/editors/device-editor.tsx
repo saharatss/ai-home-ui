@@ -8,7 +8,7 @@ import {
   addToast,
   Switch,
 } from '@heroui/react';
-import Device from '@/types/device';
+import Device, { formatDeviceStatusKey, formatDeviceStatusValue } from '@/types/device';
 import Icons from '../icons';
 import DeviceAPI from '@/api/device';
 
@@ -26,17 +26,9 @@ export const DeviceEditor = ({
 
   const [updatedDeviceStatus, setUpdatedDeviceStatus] = useState<object>({});
 
-  // string formatter "is_on" to "Is On"
-  const formatReadableKey = (str: string) => {
-    return str
-      .replace(/_/g, ' ')
-      .replace(/\b\w/g, (char) => char.toUpperCase());
-  };
-
   useEffect(() => {
     setUpdatedDevice(device);
     try {
-      console.log('Device currentStatus', typeof device.currentStatus);
       if (typeof device.currentStatus === 'string') {
         const parsedStatus = JSON.parse(device.currentStatus);
         setUpdatedDeviceStatus(parsedStatus);
@@ -57,6 +49,7 @@ export const DeviceEditor = ({
         title: 'Success',
         description: 'Device removed successfully',
         color: 'success',
+        timeout: 1000,
       });
       if (onClose) {
         onClose();
@@ -145,8 +138,7 @@ export const DeviceEditor = ({
                     <tbody>
                       <tr>
                         <td className='text-sm text-default-400'>Device ID</td>
-                        <td className='text-sm text-default-500'>{updatedDevice.id.slice(0, 8)}...</td>
-                        <td></td>
+                        <td className='text-sm text-default-500' colSpan={2}>{updatedDevice.id}</td>
                       </tr>
                       <tr>
                         <td className='text-sm text-default-400'>Device Type</td>
@@ -163,12 +155,10 @@ export const DeviceEditor = ({
 
                       {Object.entries(updatedDeviceStatus).map(([key, value]) => (
                         <tr key={key}>
-                          <td className='text-sm text-default-400'>{formatReadableKey(key)}</td>
-                          <td className='text-sm text-default-500'>
-                            {typeof value === 'string' ? value : JSON.stringify(value)}
-                          </td>
+                          <td className='text-sm text-default-400'>{formatDeviceStatusKey(key)}</td>
+                          <td className='text-sm text-default-500'>{formatDeviceStatusValue(key, value)}</td>
                           <td>
-                            {typeof value === 'boolean' && (
+                            {key === 'power' && (
                               <Switch
                                 isSelected={value}
                                 onChange={() => {

@@ -73,27 +73,16 @@ export const DeviceAdd = ({
   };
 
   const handleDeviceTypeChange = () => {
-    if (updatedDevice.deviceType === DeviceType.SWITCH) {
-      setUpdatedDevice((prev) => ({...prev, currentStatus: {"power": false},}));
-    } else if (updatedDevice.deviceType === DeviceType.OUTLET) {
-      setUpdatedDevice((prev) => ({...prev, currentStatus: {"power": false},}));
-    } else if (updatedDevice.deviceType === DeviceType.LIGHT) {
-      setUpdatedDevice((prev) => ({...prev, currentStatus: {"power": false, "brightness": 0},}));
-    } else if (updatedDevice.deviceType === DeviceType.FAN) {
-      setUpdatedDevice((prev) => ({...prev, currentStatus: {"power": false, "brightness": 0},}));
-    } else if (updatedDevice.deviceType === DeviceType.DOORBELL) {
-      setUpdatedDevice((prev) => ({...prev, currentStatus: {"power": false, "motion": false},}));
-    } else if (updatedDevice.deviceType === DeviceType.THERMOSTAT) {
-      setUpdatedDevice((prev) => ({...prev, currentStatus: {"power": false, "temperature": 20, "humidity": 50},}));
-    } else if (updatedDevice.deviceType === DeviceType.THERMOSTAT_SENSOR) {
-      setUpdatedDevice((prev) => ({...prev, currentStatus: {"temperature": 20, "humidity": 50},}));
-    } else if (updatedDevice.deviceType === DeviceType.MOTION_SENSOR) {
-      setUpdatedDevice((prev) => ({...prev, currentStatus: {"motion": false},}));
-    } else if (updatedDevice.deviceType === DeviceType.LIGHT_SENSOR) {
-      setUpdatedDevice((prev) => ({...prev, currentStatus: {"brightness": 0},}));
-    } else {
-      setUpdatedDevice((prev) => ({...prev, currentStatus: {},}));
-    }
+    if (updatedDevice.deviceType === DeviceType.SWITCH)                 setUpdatedDevice((prev) => ({...prev, currentStatus: {"power": false},}));
+    else if (updatedDevice.deviceType === DeviceType.OUTLET)            setUpdatedDevice((prev) => ({...prev, currentStatus: {"power": false},}));
+    else if (updatedDevice.deviceType === DeviceType.LIGHT)             setUpdatedDevice((prev) => ({...prev, currentStatus: {"power": false, "brightness": 0},}));
+    else if (updatedDevice.deviceType === DeviceType.FAN)               setUpdatedDevice((prev) => ({...prev, currentStatus: {"power": false, "speed": 0}, config: {"speed_min": 0, "speed_max": 3},}));
+    else if (updatedDevice.deviceType === DeviceType.DOORBELL)          setUpdatedDevice((prev) => ({...prev, currentStatus: {"power": false, "motion": false},}));
+    else if (updatedDevice.deviceType === DeviceType.THERMOSTAT)        setUpdatedDevice((prev) => ({...prev, currentStatus: {"power": false, "temperature": 20, "target_temperature": 22},}));
+    else if (updatedDevice.deviceType === DeviceType.THERMOSTAT_SENSOR) setUpdatedDevice((prev) => ({...prev, currentStatus: {"temperature": 20, "humidity": 50},}));
+    else if (updatedDevice.deviceType === DeviceType.MOTION_SENSOR)     setUpdatedDevice((prev) => ({...prev, currentStatus: {"motion": false},}));
+    else if (updatedDevice.deviceType === DeviceType.LIGHT_SENSOR)      setUpdatedDevice((prev) => ({...prev, currentStatus: {"lux": 0},}));
+    else setUpdatedDevice((prev) => ({...prev, currentStatus: {},}));
   }
 
   useEffect(() => {

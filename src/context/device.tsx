@@ -5,13 +5,15 @@ import Device from '@/types/device';
 import { useRouter } from 'next/navigation'
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
-// import { addToast } from '@heroui/react';
+import { useMqtt } from './mqtt';
 
 export const DevicesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const router = useRouter();
 
   const [devices, setDevices] = useState<Device[]>([]);
   const [devicesLoading, setDevicesLoading] = useState<boolean>(true);
+
+  const { mqttMessage } = useMqtt();
 
   const reloadDevicesData = useCallback(async () => {
     setDevicesLoading(true);
@@ -29,12 +31,26 @@ export const DevicesProvider: React.FC<{ children: ReactNode }> = ({ children })
     reloadDevicesData();
   }, [router, reloadDevicesData]);
 
+  useEffect(() => {
+    if (mqttMessage) {
+      const parsedMessage = JSON.parse(mqttMessage);
+      const newDevice = JSON.parse(parsedMessage.message);
+      setDevices((prevDevices) =>
+        prevDevices.map((device) =>
+          device.id === newDevice.id ? {
+            ...device,
+            currentStatus: JSON.parse(newDevice.currentStatus)
+          } : device
+        )
+      );
+    }
+  }, [mqttMessage]);
+
   const getDeviceById = (id: string | null | undefined) => {
     if (!id) return null;
     if (!devices) return null;
     const device = devices.find((device) => device.id === id);
     if (!device) {
-      console.warn(`Device with id ${id} not found`);
       return null;
     }
     return device;
