@@ -20,6 +20,28 @@ import {
 import 'chartjs-adapter-date-fns';
 import { Line } from "react-chartjs-2";
 
+const verticalLinePlugin = {
+  id: 'verticalLineOnHover',
+  afterDraw: (chart: ChartJS) => {
+    if (Array.isArray(chart.tooltip?.active) && chart.tooltip.active.length) {
+      const ctx = chart.ctx;
+      const x = Array.isArray(chart.tooltip?.active) ? chart.tooltip.active[0]?.element.x : undefined;
+      const topY = chart.chartArea.top;
+      const bottomY = chart.chartArea.bottom;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x, topY);
+      ctx.lineTo(x, bottomY);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)'; // light vertical line
+      ctx.stroke();
+      ctx.restore();
+    }
+  },
+};
+
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -28,8 +50,10 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  TimeScale
+  TimeScale,
+  verticalLinePlugin,
 );
+
 
 
 const Page = () => {
@@ -134,12 +158,12 @@ const Page = () => {
         </Tabs>
       </div>
 
-      <div className="flex flex-col justify-center items-center bg-white rounded-xl shadow-lg shadow-default-200 p-4 gap-4 h-60">
+      <div className="flex flex-col justify-center items-center bg-white rounded-xl shadow-lg shadow-default-200 p-4 gap-1 h-60">
         { isLoading ? (
           <Spinner size='lg' />
         ): (<>
           <Line
-            height={200}
+            height={240}
             data={{
               datasets: [
                 {
@@ -148,9 +172,12 @@ const Page = () => {
                     x: new Date(data.timestamp),
                     y: data.power / 1000,
                   })),
-                  borderColor: '#FF5733',
-                  backgroundColor: '#FF5733',
+                  borderColor: 'orange',
+                  backgroundColor: 'orange',
                   fill: false,
+                  tension: 0.4,
+                  pointRadius: 0,
+                  pointHoverRadius: 0, 
                 },
               ],
             }}
@@ -159,6 +186,15 @@ const Page = () => {
               plugins: {
                 legend: {
                   display: false,
+                },
+                tooltip: {
+                  mode: 'index',
+                  intersect: false,
+                  callbacks: {
+                    label: function (context) {
+                      return `${context.dataset.label}: ${context.parsed.y.toFixed(2)} kW`;
+                    },
+                  },
                 },
               },
               scales: {
@@ -171,12 +207,24 @@ const Page = () => {
                     display: false,
                     text: 'Timestamp',
                   },
+                  ticks: {
+                    maxRotation: 0,
+                    minRotation: 0,
+                    autoSkip: true, // (Optional) Skips overlapping labels
+                    padding: 10,
+                  },
+                  grid: {
+                    drawTicks: false,
+                  },
                 },
                 y: {
-                  beginAtZero: true,
+                  beginAtZero: false,
                   title: {
-                    display: false,
+                    display: true,
                     text: 'Power (W)',
+                  },
+                  grid: {
+                    drawTicks: false,
                   },
                 },
               },

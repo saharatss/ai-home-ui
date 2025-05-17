@@ -24,12 +24,12 @@ const DeviceRow = ({
     >
       <DeviceControlIcon device={device} />
       <div
-        className="flex-1 flex flex-col justify-center"
+        className="w-full flex-1 flex flex-col justify-center"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={onClick}
       >
-        <div className="text-nowrap text-md font-normal">{device.name}</div>
+        <div className="text-nowrap text-md font-normal text-ellipsis overflow-hidden max-w-36">{device.name}</div>
         <div className="text-nowrap text-xs/4 text-default-400 text-ellipsis overflow-hidden">{device.currentStatus ? Object.entries(device.currentStatus).map(([key, value]) => (
           <div key={key}>{`
             ${formatDeviceStatusKey(key)}

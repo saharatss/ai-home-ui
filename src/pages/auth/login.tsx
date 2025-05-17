@@ -67,6 +67,8 @@ export default function AuthLogin() {
         { userLoading ? (
           <CircularProgress size='lg'/>
         ) : (<>
+          {/* <div className="w-full text-2xl tracking-[.19em] px-3 pb-3 text-center mb-4">Agentic AI Home</div> */}
+          <div className="w-full text-lg tracking-[.19em] px-3 pb-3 text-center mb-4">Smart AI Home Assistant</div>
           <Input
             size='md'
             variant="flat"

@@ -7,6 +7,8 @@ import {
   Button,
   addToast,
   Switch,
+  Slider,
+  Input,
 } from '@heroui/react';
 import Device, { formatDeviceStatusKey, formatDeviceStatusValue } from '@/types/device';
 import Icons from '../icons';
@@ -127,7 +129,7 @@ export const DeviceEditor = ({
             <ModalBody>
               <div className='flex flex-col gap-4'>
                 <div className='flex flex-row gap-2 items-center'>
-                  <table className='w-full'>
+                  <table className='w-full' aria-label='Device Info'>
                     <thead>
                       <tr>
                         <th className='w-32'></th>
@@ -157,7 +159,7 @@ export const DeviceEditor = ({
                         <tr key={key}>
                           <td className='text-sm text-default-400'>{formatDeviceStatusKey(key)}</td>
                           <td className='text-sm text-default-500'>{formatDeviceStatusValue(key, value)}</td>
-                          <td>
+                          <td className='h-12'>
                             {key === 'power' && (
                               <Switch
                                 isSelected={value}
@@ -167,8 +169,53 @@ export const DeviceEditor = ({
                                     [key]: !value,
                                   });
                                 }}
-                                size='sm'
+                                size='md'
                                 color='primary'
+                              />
+                            )}
+                            { key === 'brightness' && (
+                              <Slider
+                                aria-label='Brightness'
+                                color='primary'
+                                size='md'
+                                className='w-full'
+                                value={value}
+                                onChange={(val) => {
+                                  setUpdatedDeviceStatus({
+                                    ...updatedDeviceStatus,
+                                    [key]: val,
+                                  });
+                                }}
+                                onChangeEnd={(val) => {
+                                  updateDeviceStatus({
+                                    ...updatedDeviceStatus,
+                                    [key]: val,
+                                  });
+                                }}
+                                minValue={0}
+                                maxValue={1}
+                                step={0.01}
+                              />
+                            )}
+                            { key === 'color' && (
+                              <Input
+                                fullWidth
+                                type='color'
+                                radius='sm'
+                                className='cursor-pointer'
+                                value={value as string}
+                                onChange={(e) => {
+                                  setUpdatedDeviceStatus({
+                                    ...updatedDeviceStatus,
+                                    [key]: e.target.value,
+                                  });
+                                }}
+                                onBlur={(e) => {
+                                  updateDeviceStatus({
+                                    ...updatedDeviceStatus,
+                                    [key]: e.target.value,
+                                  });
+                                }}
                               />
                             )}
                           </td>

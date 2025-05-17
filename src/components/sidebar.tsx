@@ -1,5 +1,6 @@
 "use client";
 
+import { useMqtt } from "@/context/mqtt";
 import { useUser } from "@/context/user";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
@@ -40,6 +41,7 @@ export const Sidebar = () => {
   const router = useRouter();
 
   const { userLoading, user } = useUser();
+  const { mqttConnected } = useMqtt();
   
   useEffect(() => {
     if (!userLoading && !user) {
@@ -60,9 +62,10 @@ export const Sidebar = () => {
 
       <div className="flex flex-col w-full gap-2">
         <div className="flex flex-col w-full">
-          <SidebarMenuItem isSelected={currentPage === ""}        onPress={()=>{ router.push('/'); }}>Agent</SidebarMenuItem>
-          <SidebarMenuItem isSelected={currentPage === "devices"} onPress={()=>{ router.push('/devices'); }}>Devices</SidebarMenuItem>
-          <SidebarMenuItem isSelected={currentPage === "energy"}  onPress={()=>{ router.push('/energy'); }}>Energy</SidebarMenuItem>
+          <SidebarMenuItem isSelected={currentPage === ""}            onPress={()=>{ router.push('/'); }}>Agent</SidebarMenuItem>
+          <SidebarMenuItem isSelected={currentPage === "devices"}     onPress={()=>{ router.push('/devices'); }}>Devices</SidebarMenuItem>
+          <SidebarMenuItem isSelected={currentPage === "automations"} onPress={()=>{ router.push('/automations'); }}>Automations</SidebarMenuItem>
+          <SidebarMenuItem isSelected={currentPage === "energy"}      onPress={()=>{ router.push('/energy'); }}>Energy</SidebarMenuItem>
         </div>
         {/* <SidebarDivider />
         <div className="flex flex-col w-full">
@@ -84,6 +87,11 @@ export const Sidebar = () => {
             <div>Puja Kumari</div>
             <div>Akanksha Pingle</div>
           </div>
+        </div>
+        <SidebarDivider />
+        <div className="flex flex-row w-full px-3 gap-2 items-center">
+          <div className={`h-2 w-2 rounded-full ${mqttConnected ? 'bg-green-500' : 'bg-red-500'}`} />
+          <div className="text-xs text-default-400">{mqttConnected ? 'Connected to Server' : 'Disconnected from Server'}</div>
         </div>
       </div>
 

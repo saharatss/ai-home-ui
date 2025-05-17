@@ -41,6 +41,8 @@ export const MqttProvider: React.FC<MqttProviderProps> = ({
       client.subscribe(`user/${localStorage.getItem('userId')}/#`, (err) => {
         if (err) {
           console.error('MQTT Subscribe Error:', err);
+        }else{
+          console.log('MQTT Subscribed to user topic');
         }
       });
     });

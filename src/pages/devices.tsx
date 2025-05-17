@@ -1,5 +1,5 @@
 'use client'
-import React, { ReactElement } from "react";
+import React, { ReactElement, useEffect } from "react";
 
 import { PageMetadata } from "@/context/page-metadata";
 import Device, { DeviceType } from "@/types/device";
@@ -15,6 +15,12 @@ const Page = () => {
   const [isAddDeviceOpen, setIsAddDeviceOpen] = React.useState(false);
 
   const { devices, reloadDevicesData } = useDevices();
+
+  useEffect(() => {
+    reloadDevicesData();
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  , []);
 
   return (<>
     <div className="flex gap-8 flex-col min-h-svh pt-10">

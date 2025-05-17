@@ -132,8 +132,8 @@ export default function AgentChatEntry({
 										<Icons.BoltIcon color='orange' />
 										<span className='text-lg' style={{color: 'orange'}}>Device Updated</span>
 									</div>
-									<div className='pl-8 flex flex-row gap-2 items-center text-sm text-default-400'>
-										<span>{getDeviceById(action.id)?.name ?? "Device Not Found"}</span>
+									<div className='pl-8 flex flex-row gap-2 items-start text-sm text-default-400'>
+										<span className='text-nowrap'>{getDeviceById(action.id)?.name ?? "Device Not Found"}</span>
 										<span>―</span>
 										<span>{Object.entries(action.status ?? {}).map(([key, value], index) => (
 											<span key={key}>{`${formatDeviceStatusKey(key)} ${formatDeviceStatusValue(key, value)}`}{index < Object.entries(action.status ?? {}).length - 1 ? ', ' : ''} </span>

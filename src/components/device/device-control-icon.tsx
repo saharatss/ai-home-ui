@@ -50,7 +50,7 @@ const DeviceControlIcon = ({
 		<div
 			className={`
 				flex items-center justify-center
-				w-12 h-12 rounded-full
+				w-12 h-12 min-w-12 rounded-full
 				${isActive ? "bg-black" : "bg-default-100/50"}
 				${isControllable ? "cursor-pointer hover:opacity-80" : ""}
 				transition-colors duration-200

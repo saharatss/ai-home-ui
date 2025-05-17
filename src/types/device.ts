@@ -57,6 +57,10 @@ export interface DeviceStatusRecord {
 	timestamp: string;
 }
 
+export const formatDeviceIdShortened = (id: string) => {
+	return id.length > 8 ? `...${id.slice(-4)}` : id;
+};
+
 export const formatDeviceStatusKey = (key: string) => {
 	switch (key) {
 		case "power"       : return "Power";
@@ -74,7 +78,7 @@ export const formatDeviceStatusValue = (key: string, value: string | number | bo
 	} else if (key === "motion") {
 		return value ? "Detected" : "Not Detected";
 	} else if (key === "brightness") {
-		return typeof value === "number" ? `${value * 100}%` : "N/A";
+		return typeof value === "number" ? `${Number(value * 100).toFixed(0)}%` : "N/A";
 	} else if (key === "temperature") {
 		return `${Number(value).toFixed(2)}°C`;
 	} else if (key === "humidity") {
